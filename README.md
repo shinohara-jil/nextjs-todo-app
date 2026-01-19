@@ -37,9 +37,11 @@
 npm install
 ```
 
-### 2. Vercel Postgresの設定
+### 2. データベースの設定
 
-#### Vercel上でデータベースを作成
+このアプリは**Vercel Postgres**または**Neon**のどちらでも動作します。
+
+#### オプションA: Vercel Postgres（Vercelにデプロイする場合）
 
 1. [Vercel Dashboard](https://vercel.com/dashboard) にアクセス
 2. プロジェクトを選択
@@ -47,30 +49,40 @@ npm install
 4. "Postgres" を選択
 5. データベース名を入力して作成
 
-#### 環境変数の設定
+Vercelが自動的に環境変数を設定します。
 
-Vercelが自動的に以下の環境変数を設定します:
-- `POSTGRES_URL`
-- `POSTGRES_PRISMA_URL`
-- `POSTGRES_URL_NON_POOLING`
-- `POSTGRES_USER`
-- `POSTGRES_HOST`
-- `POSTGRES_PASSWORD`
-- `POSTGRES_DATABASE`
-
-#### ローカル開発用の環境変数
-
+**ローカル開発用**:
 ```bash
-# .env.localファイルを作成
-cp .env.example .env.local
-
 # Vercel CLIで環境変数を取得
 vercel env pull .env.local
 ```
 
+#### オプションB: Neon（推奨・無料枠が大きい）
+
+1. [Neon Console](https://console.neon.tech/) でプロジェクト作成
+2. データベースを作成
+3. Connection String をコピー
+4. 環境変数を設定:
+
+**ローカル開発用**:
+```bash
+# .env.localファイルを作成
+cp .env.example .env.local
+
+# .env.localを編集して接続文字列を設定
+POSTGRES_URL="postgresql://user:password@ep-xxx.us-east-2.aws.neon.tech/dbname?sslmode=require"
+```
+
+**Vercelデプロイ用**:
+- Vercel Dashboard > Settings > Environment Variables
+- `POSTGRES_URL` に Neon の接続文字列を設定
+
 ### 3. データベーステーブルの作成
 
-Vercel Postgres ダッシュボードの "Query" タブで以下のSQLを実行:
+データベースのSQL Editorで以下を実行:
+
+- **Vercel Postgres**: Dashboard > Query タブ
+- **Neon**: Console > SQL Editor
 
 ```sql
 CREATE TABLE IF NOT EXISTS todos (
@@ -84,7 +96,7 @@ CREATE INDEX IF NOT EXISTS idx_todos_created_at ON todos(created_at);
 CREATE INDEX IF NOT EXISTS idx_todos_completed ON todos(completed);
 ```
 
-または、`scripts/setup-db.sql`ファイルの内容を実行してください。
+または、`scripts/setup-db.sql`ファイルの内容をコピーして実行してください。
 
 ### 4. 開発サーバーの起動
 
