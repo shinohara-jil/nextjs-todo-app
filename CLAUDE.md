@@ -168,11 +168,30 @@ CREATE INDEX idx_todos_completed ON todos(completed);
 
 ### Environment Variables
 
-Required for database connection (auto-configured by Vercel):
-- `POSTGRES_URL` - Full connection string
+**Required**:
+- `POSTGRES_URL` - Full PostgreSQL connection string
+
+**Optional** (auto-configured by Vercel Postgres):
 - `POSTGRES_PRISMA_URL` - Prisma-compatible URL
 - `POSTGRES_URL_NON_POOLING` - Direct connection URL
 - `POSTGRES_USER`, `POSTGRES_HOST`, `POSTGRES_PASSWORD`, `POSTGRES_DATABASE`
+
+### Database Options
+
+This app works with both **Vercel Postgres** and **Neon**:
+
+#### Vercel Postgres
+- Automatically integrated when deployed to Vercel
+- Environment variables auto-configured
+- Use Vercel Dashboard > Storage to create
+
+#### Neon (Recommended for development)
+- Larger free tier
+- Only requires `POSTGRES_URL` environment variable
+- Get connection string from Neon Console
+- Example: `postgresql://user:password@ep-xxx.us-east-2.aws.neon.tech/dbname?sslmode=require`
+
+**No code changes needed** - `@vercel/postgres` works with any PostgreSQL database.
 
 ### Optimistic UI Pattern
 
@@ -206,3 +225,52 @@ The project uses `@/*` alias pointing to the project root (configured in `tsconf
 import { Todo } from '@/types/todo';
 import { useTodos } from '@/hooks/useTodos';
 ```
+
+## Deployment Checklist
+
+### Initial Setup
+
+1. **Create Database**
+   - Option A: Vercel Dashboard > Storage > Create Postgres
+   - Option B: Neon Console > Create Project
+
+2. **Run Migration**
+   - Execute `scripts/setup-db.sql` in database SQL editor
+   - Creates `todos` table with indexes
+
+3. **Configure Environment Variables**
+   - Vercel Postgres: Auto-configured
+   - Neon: Add `POSTGRES_URL` to Vercel > Settings > Environment Variables
+
+4. **Deploy**
+   - Push to GitHub triggers automatic deployment
+   - Or use `vercel --prod`
+
+### After Database Changes
+
+1. Update schema in `scripts/setup-db.sql`
+2. Run new migration in database console
+3. Update TypeScript types if needed
+4. Test locally before deploying
+
+## Troubleshooting
+
+### "Failed to fetch todos" Error
+
+1. Check environment variables are set in Vercel
+2. Verify database connection string is correct
+3. Ensure `todos` table exists
+4. Check Vercel deployment logs
+
+### Local Development Issues
+
+1. Ensure `.env.local` exists with `POSTGRES_URL`
+2. Verify database is accessible from local network
+3. Check if Neon database is paused (auto-pauses after inactivity)
+
+### Optimistic Update Issues
+
+If UI updates but database doesn't:
+- Check network tab for API errors
+- Verify API routes are working (`/api/todos`)
+- Check server logs in Vercel dashboard
