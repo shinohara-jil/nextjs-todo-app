@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npx create-next-app:*)",
-      "Bash(gh repo create:*)"
+      "Bash(gh repo create:*)",
+      "Bash(vercel --version:*)",
+      "Bash(gh issue create:*)"
     ]
   }
 }

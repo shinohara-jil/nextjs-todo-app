@@ -113,6 +113,47 @@ vercel link
    - ビルド
    - Vercelへのデプロイ
 
+## 🤖 AI自動実装（Claude Auto Implementation）
+
+このプロジェクトはGitHub Issue上で `/implement` とコメントすることで、Claudeが自動的に実装を行うワークフローを搭載しています。
+
+### 使い方
+
+1. **Issueを作成**
+   - 実装したい機能の詳細をIssueに記載
+
+2. **自動実装を開始**
+   - Issueのコメント欄に `/implement` または `@claude implement` と入力
+   - GitHub Actionsが自動的に起動
+
+3. **Pull Requestが自動作成される**
+   - Claudeが実装を生成
+   - 新しいブランチとPull Requestが自動作成されます
+   - レビュー後にマージ
+
+### 必要な設定
+
+GitHubリポジトリの Settings > Secrets and variables > Actions で以下のシークレットを設定:
+
+- **ANTHROPIC_API_KEY**
+  - https://console.anthropic.com/ でAPIキーを生成
+  - Claude APIへのアクセスに必要
+
+### ワークフローの流れ
+
+1. Issueコメントで `/implement` をトリガー
+2. GitHub Actionsが起動し、Claude APIを呼び出し
+3. Issueの内容を解析して実装コードを生成
+4. 新しいブランチを作成してコードをコミット
+5. Pull Requestを自動作成
+6. レビュー・テスト後にマージ
+
+### 制限事項
+
+- 複雑な実装の場合は手動調整が必要な場合があります
+- APIトークンの使用量に注意してください
+- 生成されたコードは必ずレビューしてください
+
 ## 📝 アーキテクチャ
 
 詳細なアーキテクチャ情報は [CLAUDE.md](./CLAUDE.md) を参照してください。
