@@ -17,6 +17,8 @@ export default function Home() {
     updateTodo,
     toggleTodo,
     stats,
+    isLoading,
+    error,
   } = useTodos();
 
   useEffect(() => {
@@ -38,8 +40,32 @@ export default function Home() {
 
         {/* メインコンテンツ */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 md:p-8">
-          {isMounted ? (
+          {!isMounted ? (
+            <div className="text-center py-12">
+              <p className="text-gray-400 dark:text-gray-500 text-lg">
+                読み込み中...
+              </p>
+            </div>
+          ) : (
             <>
+              {/* エラー表示 */}
+              {error && (
+                <div className="mb-4 p-4 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 rounded-lg">
+                  <p className="text-red-700 dark:text-red-400 text-sm">
+                    ⚠️ {error}
+                  </p>
+                </div>
+              )}
+
+              {/* ローディング表示 */}
+              {isLoading && (
+                <div className="mb-4 p-4 bg-blue-100 dark:bg-blue-900/30 border border-blue-400 dark:border-blue-700 rounded-lg">
+                  <p className="text-blue-700 dark:text-blue-400 text-sm">
+                    🔄 読み込み中...
+                  </p>
+                </div>
+              )}
+
               {/* 入力フォーム */}
               <TodoInput onAdd={addTodo} />
 
@@ -58,12 +84,6 @@ export default function Home() {
                 onUpdate={updateTodo}
               />
             </>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-400 dark:text-gray-500 text-lg">
-                読み込み中...
-              </p>
-            </div>
           )}
         </div>
 

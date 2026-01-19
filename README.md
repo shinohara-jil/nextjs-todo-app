@@ -11,7 +11,11 @@
 - ✅ タスクの追加、編集、削除
 - ✅ 完了チェック機能
 - ✅ フィルター機能（全て/進行中/完了済み）
-- ✅ LocalStorageによるデータ永続化
+- ✅ **Vercel Postgresによるデータ永続化**
+- ✅ 複数デバイス・ブラウザ間でのデータ同期
+- ✅ RESTful API (Next.js Route Handlers)
+- ✅ 楽観的UI更新
+- ✅ エラーハンドリング
 - ✅ レスポンシブデザイン
 - ✅ ダークモード対応
 - ✅ インライン編集機能
@@ -20,19 +24,69 @@
 
 - **フレームワーク**: Next.js 15 (App Router)
 - **言語**: TypeScript
+- **データベース**: Vercel Postgres
 - **スタイリング**: Tailwind CSS
 - **状態管理**: React Hooks (カスタムフック)
-- **データ永続化**: LocalStorage
+- **API**: Next.js Route Handlers (RESTful)
 
 ## 📦 セットアップ
 
-### 依存パッケージのインストール
+### 1. 依存パッケージのインストール
 
 ```bash
 npm install
 ```
 
-### 開発サーバーの起動
+### 2. Vercel Postgresの設定
+
+#### Vercel上でデータベースを作成
+
+1. [Vercel Dashboard](https://vercel.com/dashboard) にアクセス
+2. プロジェクトを選択
+3. "Storage" タブから "Create Database" をクリック
+4. "Postgres" を選択
+5. データベース名を入力して作成
+
+#### 環境変数の設定
+
+Vercelが自動的に以下の環境変数を設定します:
+- `POSTGRES_URL`
+- `POSTGRES_PRISMA_URL`
+- `POSTGRES_URL_NON_POOLING`
+- `POSTGRES_USER`
+- `POSTGRES_HOST`
+- `POSTGRES_PASSWORD`
+- `POSTGRES_DATABASE`
+
+#### ローカル開発用の環境変数
+
+```bash
+# .env.localファイルを作成
+cp .env.example .env.local
+
+# Vercel CLIで環境変数を取得
+vercel env pull .env.local
+```
+
+### 3. データベーステーブルの作成
+
+Vercel Postgres ダッシュボードの "Query" タブで以下のSQLを実行:
+
+```sql
+CREATE TABLE IF NOT EXISTS todos (
+  id TEXT PRIMARY KEY,
+  text TEXT NOT NULL,
+  completed BOOLEAN DEFAULT FALSE,
+  created_at BIGINT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_todos_created_at ON todos(created_at);
+CREATE INDEX IF NOT EXISTS idx_todos_completed ON todos(completed);
+```
+
+または、`scripts/setup-db.sql`ファイルの内容を実行してください。
+
+### 4. 開発サーバーの起動
 
 ```bash
 npm run dev
